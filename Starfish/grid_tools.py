@@ -177,8 +177,8 @@ class MarleyGridInterface(RawGridInterface):
     def __init__(self, air=False, norm=False, wl_range=[4000, 50000],
         base=os.path.expandvars(Starfish.grid["raw_path"])):
 
-        super().__init__(name="Marley", param_names = ["temp", "logg"], 
-            points = [np.array([500, 525, 550, 575, 600, 650, 700, 750, 800, 
+        super().__init__(name="Marley", param_names = ["temp", "logg"],
+            points = [np.array([500, 525, 550, 575, 600, 650, 700, 750, 800,
             850, 900, 950,  1000]), np.arange(4.0, 5.51, 0.25)],
             air=air, wl_range=wl_range, base=base)
 
@@ -190,15 +190,15 @@ class MarleyGridInterface(RawGridInterface):
         self.base = os.path.expandvars(self.base)
         # if air is true, convert the normally vacuum file to air wls.
         try:
-            dat = pd.read_csv(self.base + '/sp_t1000g1000nc_m0.0', 
-                      names=['wavelength', 'flux'], skiprows=3, 
+            dat = pd.read_csv(self.base + '/sp_t1000g1000nc_m0.0',
+                      names=['wavelength', 'flux'], skiprows=3,
                       delim_whitespace=True)
         except OSError:
             raise C.GridError("Wavelength file improperly specified.")
 
         # Wavelength in Angstroms, increasing
-        w_full = 10000.0*dat.wavelength[::-1].values 
-        
+        w_full = 10000.0*dat.wavelength[::-1].values
+
         if self.air:
             self.wl_full = vacuum_to_air(w_full)
         else:
@@ -238,15 +238,15 @@ class MarleyGridInterface(RawGridInterface):
         #Still need to check that file is in the grid, otherwise raise a C.GridError
         #Read all metadata in from the FITS header, and append to spectrum
         try:
-            dat = pd.read_csv(fname, names=['wavelength', 'flux'], 
+            dat = pd.read_csv(fname, names=['wavelength', 'flux'],
                     skiprows=3, delim_whitespace=True)
             f = dat.flux[::-1].values
         except OSError:
             raise C.GridError("{} is not on disk.".format(fname))
-        
+
         x = dat.wavelength[::-1].values*u.micron
         f = (f*u.erg/u.cm**2/u.s/u.Hz).to(
-             u.erg/u.cm**2/u.s/u.Angstrom, 
+             u.erg/u.cm**2/u.s/u.Angstrom,
              equivalencies=u.spectral_density(x))
         f = f.value
         f = f/np.pi # convert to erg/cm^2/s/A/steradian
@@ -286,8 +286,8 @@ class MarleyMay2017GridInterface(MarleyGridInterface):
 
         self.name="MarleyMay2017"
         self.param_names = ["temp", "logg"]
-        self.points = [np.array([200, 225, 250, 300, 325, 350, 375, 400, 
-        425, 450, 475, 500, 525, 550, 575, 600, 650, 700, 750, 800, 
+        self.points = [np.array([200, 225, 250, 300, 325, 350, 375, 400,
+        425, 450, 475, 500, 525, 550, 575, 600, 650, 700, 750, 800,
         850, 900, 950,  1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700,
         1800, 1900, 2000, 2100, 2200, 2400]), np.arange(3.25, 5.51, 0.25)]
 
@@ -295,7 +295,7 @@ class MarleyMay2017GridInterface(MarleyGridInterface):
                           {3.25:"17", 3.5:"31", 3.75:"56",
                            4.0:"100",4.25:"178",4.5:"316",4.75:"562",
                            5.0:"1000",5.25:"1780",5.5:"3160"}]
-        
+
 
 class PHOENIXGridInterface(RawGridInterface):
     '''
@@ -805,7 +805,7 @@ class HDF5Creator:
                     # downsample to the final grid
                     interp = InterpolatedUnivariateSpline(self.wl_FFT, fl_tapered, k=5)
                     fl_final = interp(self.wl_final)
-                    
+
             del interp
             gc.collect()
 
@@ -1237,6 +1237,12 @@ class ESPaDOnS(Instrument):
     '''ESPaDOnS Instrument'''
     def __init__(self, name="ESPaDOnS", FWHM=4.4, wl_range=(3700, 10500)):
         super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
+
+class nubble(Instrument):
+    '''IGRINS H band instrument'''
+    def __init__(self, name="nubble", FWHM=300.0, wl_range=(10500, 16500)):
+        super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
+        self.air = False
 
 def vacuum_to_air(wl):
     '''
