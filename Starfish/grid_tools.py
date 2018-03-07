@@ -166,6 +166,99 @@ class RawGridInterface:
         pass
 
 
+class Morley2015GridInterface(RawGridInterface):
+    '''
+    An Interface to the 2015 Morley and collaborators synthetic library.
+    MORLEY ET AL. 2015:
+    SUB-NEPTUNE MODELS INCLUDING THE EFFECTS OF CLOUDS AND HAZES
+     Models of GJ 1214b “analogs” from Morley et al. 2015, including cloudy,
+     hazy, and cloud-free models. These include thermal emission, transmission,
+     and albedo spectra. Other similar models available upon request.
+
+
+
+    :param norm: normalize the spectrum to solar luminosity?
+    :type norm: bool
+
+    '''
+    def __init__(self, air=False, norm=False, wl_range=[3500, 300000],
+        base=os.path.expandvars(Starfish.grid["raw_path"])):
+
+        super().__init__(name="Morley2015", param_names = ["Z", "insolation"],
+            points = [np.array([50, 100, 150, 200, 250, 300, 1000]),
+                      np.array([0.3, 1, 3, 10])],
+            air=air, wl_range=wl_range, base=base)
+
+        self.norm = norm #Deprecated
+        self.par_dicts = [None, {0.3:"0.3", 1.0:"1", 3.0:"3", 10.0:"10"}]
+
+        self.base = os.path.expandvars(self.base)
+
+        try:
+            #technically not "flux"! Units are Radius in km!
+            dat = pd.read_csv(self.base + '/gj1214-1000x-0.3x-nc.out',
+                      names=['wavelength', 'flux'], skiprows=1,
+                      delim_whitespace=True)
+        except OSError:
+            raise C.GridError("Wavelength file improperly specified.")
+
+        # Wavelength in Angstroms, increasing
+        w_full = 10000.0*dat.wavelength[::-1].values
+
+        # if air is true, convert the normally vacuum file to air wls.
+        if self.air:
+            self.wl_full = vacuum_to_air(w_full)
+        else:
+            self.wl_full = w_full
+
+        self.ind = (self.wl_full >= self.wl_range[0]) & (self.wl_full <= self.wl_range[1])
+        self.wl = self.wl_full[self.ind]
+        self.rname = self.base + "/gj1214-{0:0>.0f}x-{1:}x-nc.out"
+
+    def load_flux(self, parameters, norm=True):
+        '''
+       Load just the flux and header information.
+
+       :param parameters: stellar parameters
+       :type parameters: np.array
+
+       :raises C.GridError: if the file cannot be found on disk.
+
+       :returns: tuple (flux_array, header_dict)
+
+       '''
+        self.check_params(parameters) # Check to make sure that the keys are
+        # allowed and that the values are in the grid
+
+        # Create a list of the parameters to be fed to the format string
+        # optionally replacing arguments using the dictionaries, if the formatting
+        # of a certain parameter is tricky
+        str_parameters = []
+        for param, par_dict in zip(parameters, self.par_dicts):
+            if par_dict is None:
+                str_parameters.append(param)
+            else:
+                str_parameters.append(par_dict[param])
+
+        fname = self.rname.format(*str_parameters)
+
+        #Still need to check that file is in the grid, otherwise raise a C.GridError
+        try:
+            # technically not "flux", it's radius in KM!
+            dat = pd.read_csv(fname, names=['wavelength', 'flux'],
+                    skiprows=1, delim_whitespace=True)
+            f = dat.flux[::-1].values
+        except OSError:
+            raise C.GridError("{} is not on disk.".format(fname))
+
+        #Add temp, logg, Z, alpha, norm to the metadata
+        header = {}
+        header["norm"] = self.norm
+        header["air"] = self.air
+
+        return (f[self.ind], header)
+
+
 class MarleyGridInterface(RawGridInterface):
     '''
     An Interface to the 2017 Marley and collaborators synthetic library.
