@@ -389,6 +389,34 @@ class MarleyMay2017GridInterface(MarleyGridInterface):
                            4.0:"100",4.25:"178",4.5:"316",4.75:"562",
                            5.0:"1000",5.25:"1780",5.5:"3160"}]
 
+class SonoraBobcatGridInterface(MarleyGridInterface):
+    '''
+    An Interface to the 2017 Marley and collaborators synthetic library.
+
+    :param norm: normalize the spectrum to solar luminosity?
+    :type norm: bool
+
+    '''
+    def __init__(self, air=False, norm=False, wl_range=[4000, 50000],
+        base=os.path.expandvars(Starfish.grid["raw_path"])):
+
+        #There's probably a more elegant inheritance way to do this...
+        super().__init__(air=air, norm=norm, wl_range=wl_range,
+        base=base)
+
+        self.name="SonoraBobcat"
+        self.param_names = ["temp", "logg"]
+        self.points = [np.array([200, 225, 250, 300, 325, 350, 375, 400,
+        425, 450, 475, 500, 525, 550, 575, 600, 650, 700, 750, 800,
+        850, 900, 950,  1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700,
+        1800, 1900, 2000, 2100, 2200, 2400]), np.arange(3.25, 5.51, 0.25)]
+
+        self.par_dicts = [None,
+                          {3.25:"17", 3.5:"31", 3.75:"56",
+                           4.0:"100",4.25:"178",4.5:"316",4.75:"562",
+                           5.0:"1000",5.25:"1780",5.5:"3160"}]
+
+
 
 class PHOENIXGridInterface(RawGridInterface):
     '''
