@@ -1349,6 +1349,13 @@ class NIRSPEC_LO_F7(Instrument):
     def __init__(self, name="NIRSPEC_LO_F7", FWHM=240, wl_range=(18390, 26300)):
         super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
 
+class NIRSPEC_J(Instrument):
+    '''NIRSPEC Filter 7 low res band instrument'''
+    # Note-- resolution should be 20000, so ~239 km/s FWHM.
+    def __init__(self, name="NIRSPEC_J", FWHM=15, wl_range=(11000, 14000)):
+        super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
+        self.air = False
+
 class JWST_NIRSPEC_G235M(Instrument):
     '''JWST NIRSpec G235M instrument'''
     def __init__(self, name="JWST_NIRSPEC_G235M", FWHM=300, wl_range=(16000, 31000)):
@@ -1364,6 +1371,11 @@ class nubble(Instrument):
     def __init__(self, name="nubble", FWHM=300.0, wl_range=(10500, 16500)):
         super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
         self.air = False
+
+class Kepler(Instrument):
+    '''Kepler Instrument'''
+    def __init__(self, name="Kepler", FWHM=300.0, wl_range=(3480, 9700)):
+        super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
 
 def vacuum_to_air(wl):
     '''
