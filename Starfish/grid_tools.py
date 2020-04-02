@@ -1359,7 +1359,7 @@ class NIRSPEC_J(Instrument):
 class HPF(Instrument):
     '''HPF on HET '''
     # Note-- resolution should be 55,000, so \Delta v = c/R = 3e5/55000 = 5.45 km/s FWHM.
-    def __init__(self, name="HPF", FWHM=5.45, wl_range=(8100, 12800)):
+    def __init__(self, name="HPF", FWHM=5.45, wl_range=(7950, 12900)):
         super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
         self.air = False
 
