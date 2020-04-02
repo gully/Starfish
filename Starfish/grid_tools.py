@@ -1356,6 +1356,13 @@ class NIRSPEC_J(Instrument):
         super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
         self.air = False
 
+class HPF(Instrument):
+    '''HPF on HET '''
+    # Note-- resolution should be 55,000, so \Delta v = c/R = 3e5/55000 = 5.45 km/s FWHM.
+    def __init__(self, name="HPF", FWHM=5.45, wl_range=(8100, 12800)):
+        super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
+        self.air = False
+
 class JWST_NIRSPEC_G235M(Instrument):
     '''JWST NIRSpec G235M instrument'''
     def __init__(self, name="JWST_NIRSPEC_G235M", FWHM=300, wl_range=(16000, 31000)):
@@ -1372,9 +1379,26 @@ class nubble(Instrument):
         super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
         self.air = False
 
+class STIS(Instrument):
+    '''HST STIS 750L instrument'''
+    def __init__(self, name="STIS", FWHM=430.0, wl_range=(4800, 13000)):
+        super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
+        self.air = False
+
+class WFC3(Instrument):
+    '''WFC3 G141 instrument'''
+    def __init__(self, name="WFC3", FWHM=2300.0, wl_range=(9400, 1800)):
+        super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
+        self.air = False
+
 class Kepler(Instrument):
     '''Kepler Instrument'''
     def __init__(self, name="Kepler", FWHM=300.0, wl_range=(3480, 9700)):
+        super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
+
+class BVRIJHK(Instrument):
+    '''Kepler Instrument'''
+    def __init__(self, name="Kepler", FWHM=600.0, wl_range=(3400, 25000)):
         super().__init__(name=name, FWHM=FWHM, wl_range=wl_range)
 
 def vacuum_to_air(wl):
